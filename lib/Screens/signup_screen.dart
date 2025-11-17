@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex/Screens/home_screen.dart';
@@ -72,12 +73,17 @@ class SignupScreen extends ConsumerWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Image.asset('assets/images/login_screen_1.png'),
-                          Image.asset(
-                            'assets/images/login_screen_2.png',
-                            width: constraints.maxWidth * 0.5,
-                            height: constraints.maxHeight * 0.15,
+                          Image.asset('assets/images/new_loginscreen.png'),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(70),
+                            child: Image.asset(
+                              'assets/New_Logo.png',
+                              width: constraints.maxWidth * 0.5,
+                              height: constraints.maxHeight * 0.15,
+                              fit: BoxFit.contain,
+                            ),
                           ),
+                          const SizedBox(height: 20),
                           CustomFormField(
                             controller: _personNameController,
                             hintText: 'Name',
@@ -163,30 +169,69 @@ class SignupScreen extends ConsumerWidget {
                                             ),
                                           ),
                                           behavior: SnackBarBehavior.floating,
-                                          backgroundColor: Colors.transparent,
-                                          elevation: 3,
+                                          backgroundColor: Colors.red,
                                         ),
                                       );
                                       return;
                                     }
-                                    authNotifier
-                                        .signupUserWithFirebase(
-                                            _emailController.text,
-                                            _passwordController.text,
-                                            _personNameController.text)
-                                        .then((value) {
-                                      context.navigateToScreen(
-                                          isReplace: true,
-                                          child: const HomeScreen());
-                                    });
+                                    try{
+                                      authNotifier
+                                          .signupUserWithFirebase(
+                                          _emailController.text,
+                                          _passwordController.text,
+                                          _personNameController.text)
+                                          .then((value) {
+                                        context.navigateToScreen(
+                                            isReplace: true,
+                                            child: const HomeScreen());
+                                      });
+                                    }catch(error){
+                                      if (error is FirebaseAuthException) {
+                                        // Display Firebase-specific error message in SnackBar
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              error.message ?? "An unknown error occurred",
+                                              style: const TextStyle(color: Colors.white),
+                                            ),
+                                            backgroundColor: Colors.red,
+                                            behavior: SnackBarBehavior.floating,
+                                          ),
+                                        );
+                                      } else {
+                                        // Handle other types of exceptions
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              "An error occurred: ${error.toString()}",
+                                              style: const TextStyle(color: Colors.white),
+                                            ),
+                                            backgroundColor: Colors.red,
+                                            behavior: SnackBarBehavior.floating,
+                                          ),
+                                        );
+                                      }
+                                    }
                                   },
                                 ),
                           Padding(
                             padding: const EdgeInsets.all(20),
                             child: GestureDetector(
-                              child: const Text(
-                                'Already a Pokemon Trainer? Login Instead',
-                                style: TextStyle(color: Colors.black),
+                              child: RichText(
+                                text: const TextSpan(
+                                  text: 'Already a Pokemon Trainer? ', // Regular text
+                                  style: TextStyle(color: Colors.black), // Default style
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text: 'Login Instead', // Text to be styled differently
+                                      style: TextStyle(
+                                        color: Colors.deepPurple, // Different color for 'Login Instead'
+                                        fontWeight: FontWeight.bold, // Bold font weight for emphasis
+                                        decoration: TextDecoration.underline, // Underline to indicate a link
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                               onTap: () {
                                 context.navigateToScreen(isReplace:true,child: LoginScreen());

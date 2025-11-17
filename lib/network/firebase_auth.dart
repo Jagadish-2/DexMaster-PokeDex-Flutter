@@ -34,4 +34,12 @@ class FirebaseAuthClass extends BaseFirebaseService {
 
     return userCredential;
   }
+
+  Future<void> sendPasswordResetLink(String email) async{
+    try{
+      await auth.sendPasswordResetEmail(email: email);
+    } catch(e){
+      print(e.toString());
+    }
+  }
 }

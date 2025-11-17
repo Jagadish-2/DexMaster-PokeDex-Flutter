@@ -23,7 +23,7 @@ class _FaqScreenState extends State<FaqScreen> {
   initBannerAd() async {
     bannerAd = BannerAd(
         size: AdSize.banner,
-        adUnitId: '',
+        adUnitId: 'ca-app-pub-6551977015242048/2223447155',
         listener: BannerAdListener(onAdLoaded: (ad) {
           setState(() {
             isBannerLoaded = true;

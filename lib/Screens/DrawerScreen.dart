@@ -41,12 +41,12 @@ class _DrawerScreenState extends ConsumerState<DrawerScreen> {
   void share() {
     String appLink = "";
     if (Platform.isAndroid) {
-      appLink = "https://sites.google.com/view/pokedex-jagadish/home";
+      appLink = "https://play.google.com/store/apps/details?id=com.jagadish.pokedex";
     } else {
       // appLink = "https://itunes.apple.com/us/app/myapp/idxxxxxxxx?ls=1&mt=8";
-      appLink = "https://sites.google.com/view/pokedex-jagadish/home"; // beta enroll link
+      appLink = "https://play.google.com/store/apps/details?id=com.jagadish.pokedex"; // beta enroll link
     }
-    Share.share("Check out the Pokédex App at: $appLink", subject: "Pokédex");
+    Share.share("Check out the Pokédex App at: $appLink", subject: "DexMaster");
   }
 
   void _showAppInfoDialog(BuildContext context) {

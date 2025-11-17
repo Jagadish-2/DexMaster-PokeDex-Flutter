@@ -30,15 +30,6 @@ class MyApp extends StatelessWidget {
     brightness: Brightness.dark,
     primaryColor: Colors.blue,
     hintColor: Colors.blueGrey,
-    //textTheme: TextTheme(
-     // bodyLarge: TextStyle(color: Colors.black),
-      //bodyMedium: TextStyle(color: Colors.black),
-      //displayLarge: TextStyle(color: Colors.black),
-     // displayMedium: TextStyle(color: Colors.black),
-      //bodySmall: TextStyle(color: Colors.black),
-     // headlineMedium: TextStyle(color: Colors.black),
-      //headlineSmall: TextStyle(color: Colors.black)
-   // ),
   );
 
   @override

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex/Screens/home_screen.dart';
@@ -6,12 +7,13 @@ import 'package:pokedex/riverpod/auth_pod.dart';
 import 'package:pokedex/utils/context_extension.dart';
 import 'package:pokedex/widgets/custom_formfield.dart';
 
+import 'forgot_password.dart';
+
 class LoginScreen extends ConsumerWidget {
   LoginScreen({super.key});
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
 
   // Email validation function
   String? validateEmail(String email) {
@@ -61,12 +63,17 @@ class LoginScreen extends ConsumerWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Image.asset('assets/images/login_screen_1.png'),
-                          Image.asset(
-                            'assets/images/login_screen_2.png',
-                            width: constraints.maxWidth * 0.5,
-                            height: constraints.maxHeight * 0.15,
+                          Image.asset('assets/images/new_loginscreen.png'),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(70),
+                            child: Image.asset(
+                              'assets/New_Logo.png',
+                              width: constraints.maxWidth * 0.5,
+                              height: constraints.maxHeight * 0.15,
+                              fit: BoxFit.contain,
+                            ),
                           ),
+                          const SizedBox(height: 20),
                           CustomFormField(
                             controller: _emailController,
                             hintText: 'Email',
@@ -109,33 +116,45 @@ class LoginScreen extends ConsumerWidget {
                                       ),
                                     ),
                                   ),
-                                  onTap: () {
+                                  onTap: () async {
                                     FocusScope.of(context).unfocus();
-                                    final emailError = validateEmail(_emailController.text);
-                                    final passwordError = validatePassword(_passwordController.text);
+                                    final emailError =
+                                        validateEmail(_emailController.text);
+                                    final passwordError = validatePassword(
+                                        _passwordController.text);
 
-                                    if (emailError != null || passwordError != null) {
+                                    if (emailError != null ||
+                                        passwordError != null) {
                                       // Show error message
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         SnackBar(
                                           content: Container(
                                             padding: const EdgeInsets.all(1),
-                                            height: 80,
-                                            width: MediaQuery.of(context).size.width,
+                                            height: 60,
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
                                             decoration: const BoxDecoration(
                                               color: Colors.red,
-                                              borderRadius: BorderRadius.all(Radius.circular(10),
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(10),
                                               ),
                                             ),
                                             child: Row(
                                               children: [
                                                 const SizedBox(width: 8),
-                                                const Icon(Icons.warning,color: Colors.white,size: 40,),
+                                                const Icon(
+                                                  Icons.warning,
+                                                  color: Colors.white,
+                                                  size: 40,
+                                                ),
                                                 const SizedBox(width: 8),
                                                 Expanded(
                                                   child: Center(
                                                     child: Text(
-                                                      emailError ?? passwordError!,
+                                                      emailError ??
+                                                          passwordError!,
                                                     ),
                                                   ),
                                                 ),
@@ -143,34 +162,110 @@ class LoginScreen extends ConsumerWidget {
                                             ),
                                           ),
                                           behavior: SnackBarBehavior.floating,
-                                          backgroundColor: Colors.transparent,
-                                          elevation: 3,
+                                          backgroundColor: Colors.red,
                                         ),
                                       );
                                       return;
                                     }
-                                    authNotifier
-                                        .loginUserWithFirebase(
-                                            _emailController.text,
-                                            _passwordController.text)
-                                        .then((value) {
-                                      context.navigateToScreen(
-                                          isReplace: true,
-                                          child: const HomeScreen());
 
-                                    });
+                                    try {
+                                      await authNotifier
+                                          .loginUserWithFirebase(
+                                              _emailController.text,
+                                              _passwordController.text)
+                                          .then((value) {
+                                        context.navigateToScreen(
+                                            isReplace: true,
+                                            child: const HomeScreen());
+                                      });
+                                    } catch (error) {
+                                      if (error is FirebaseAuthException) {
+                                        // Display Firebase-specific error message in SnackBar
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              error.message ??
+                                                  "An unknown error occurred",
+                                              style: const TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            backgroundColor: Colors.red,
+                                            behavior: SnackBarBehavior.floating,
+                                          ),
+                                        );
+                                      } else {
+                                        // Handle other types of exceptions
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              "An error occurred: ${error.toString()}",
+                                              style: const TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            backgroundColor: Colors.red,
+                                            behavior: SnackBarBehavior.floating,
+                                          ),
+                                        );
+                                      }
+                                    }
                                   },
                                 ),
+                          const SizedBox(height: 20),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: InkWell(
+                              child: const Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: Text(
+                                  "Forgot Password ?",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.deepPurple,
+                                  ),
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ForgotPassword()));
+                              },
+                            ),
+                          ),
                           Padding(
                             padding: const EdgeInsets.all(20),
                             child: GestureDetector(
-                              child: const Text(
-                                'A New Pokemon Trainer? Sign up Instead',
-                                style: TextStyle(color: Colors.black),
+                              child: RichText(
+                                text: const TextSpan(
+                                  text: 'Are you a New Trainer? ',
+                                  // Regular text
+                                  style: TextStyle(color: Colors.black),
+                                  // Default style
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text: 'Sign up Instead',
+                                      // Text to be styled differently
+                                      style: TextStyle(
+                                        color: Colors.deepPurple,
+                                        // Different color for 'Login Instead'
+                                        fontWeight: FontWeight.bold,
+                                        // Bold font weight for emphasis
+                                        decoration: TextDecoration
+                                            .underline, // Underline to indicate a link
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                               onTap: () {
                                 FocusScope.of(context).unfocus();
-                                context.navigateToScreen(isReplace:true,child: SignupScreen());
+                                context.navigateToScreen(
+                                    isReplace: true, child: SignupScreen());
                               },
                             ),
                           )

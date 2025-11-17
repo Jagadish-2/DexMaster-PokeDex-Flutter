@@ -14,7 +14,9 @@ class AuthProvider extends ChangeNotifier {
   FirestoreService fstore = FirestoreService();
 
   bool get isLoading => _isLoading;
+
   User1? get user => _user;
+
   UserCredential? get userCredentials => _userCredential;
 
   AuthProvider() {
@@ -44,7 +46,8 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<UserCredential> loginUserWithFirebase(String email, String password) async {
+  Future<UserCredential> loginUserWithFirebase(String email,
+      String password) async {
     setLoader(true);
     try {
       _userCredential = await fauth.loginUserWithFirebase(email, password);
@@ -62,15 +65,20 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> signupUserWithFirebase(String email, String password, String name) async {
+  Future<void> signupUserWithFirebase(String email, String password,
+      String name) async {
     setLoader(true);
     try {
-      final userCredential = await fauth.signupUserWithFirebase(email, password, name);
+      final userCredential = await fauth.signupUserWithFirebase(
+          email, password, name);
       final data = {
         'email': email,
         'password': password,
         'uid': userCredential.user!.uid,
-        'createdAt': DateTime.now().microsecondsSinceEpoch.toString(),
+        'createdAt': DateTime
+            .now()
+            .microsecondsSinceEpoch
+            .toString(),
         'name': name,
         'bio': '',
         'profilePic': '',
@@ -101,7 +109,8 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> addUserDataToDatabase(Map<String, dynamic> data, String collectionName, String docName) async {
+  Future<bool> addUserDataToDatabase(Map<String, dynamic> data,
+      String collectionName, String docName) async {
     try {
       await fstore.addDataToFireStore(data, collectionName, docName);
       return true;
@@ -125,6 +134,14 @@ class AuthProvider extends ChangeNotifier {
   void setLoader(bool loader) {
     _isLoading = loader;
     notifyListeners();
+  }
+
+  Future<void> sendPasswordResetLink(String email) async {
+    try {
+      await fauth.sendPasswordResetLink(email);
+    } catch (e) {
+      return Future.error(e);
+    }
   }
 }
 
